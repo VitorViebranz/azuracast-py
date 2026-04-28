@@ -1,3 +1,5 @@
+import uuid
+
 import pytest
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -7,8 +9,6 @@ from src.modules.users.models import User
 
 
 async def create_superadmin(db_session: AsyncSession) -> str:
-    import uuid
-
     user = User(
         id=uuid.uuid4(),
         email=f"admin_{uuid.uuid4().hex[:8]}@test.com",
@@ -56,7 +56,7 @@ async def test_get_station(client: AsyncClient, db_session: AsyncSession):
     headers = {"Authorization": f"Bearer {token}"}
     create_resp = await client.post(
         "/api/v1/stations",
-        json={"name": "Get Station", "short_name": f"get-station-{__import__('uuid').uuid4().hex[:8]}"},
+        json={"name": "Get Station", "short_name": f"get-station-{uuid.uuid4().hex[:8]}"},
         headers=headers,
     )
     station_id = create_resp.json()["id"]

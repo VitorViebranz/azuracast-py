@@ -1,0 +1,86 @@
+# AzuraCast-py — Generated Liquidsoap config
+# Station : {{ station.name }} ({{ station.short_name }})
+# Station ID : {{ station.id }}
+# DO NOT EDIT MANUALLY — regenerate via the AzuraCast-py API
+
+set("server.telnet", true)
+set("server.telnet.port", {{ telnet_port }})
+set("server.telnet.bind_addr", "0.0.0.0")
+set("log.level", 3)
+set("log.stdout", true)
+
+# ---------------------------------------------------------------------------
+# Metadata webhook — fires on every track change
+# ---------------------------------------------------------------------------
+def on_track_change(m) =
+  j = json()
+  j.add("title",  m["title"])
+  j.add("artist", m["artist"])
+  j.add("album",  m["album"])
+  _ = http.post(
+    "{{ webhook_url }}",
+    headers=[("Content-Type", "application/json")],
+    data=json.stringify(j)
+  )
+end
+
+# ---------------------------------------------------------------------------
+# AutoDJ playlists
+# ---------------------------------------------------------------------------
+{% if playlists %}
+{% for playlist in playlists %}
+playlist_{{ loop.index0 }} = playlist(
+  id="pl_{{ playlist.id | string | replace('-', '_') }}",
+  mode="randomize",
+  reload=3600,
+  "{{ media_root }}/{{ station.short_name }}/playlist_{{ playlist.id }}.m3u"
+)
+{% endfor %}
+
+autodj = fallback(
+  track_sensitive=false,
+  [
+{% for playlist in playlists %}
+    playlist_{{ loop.index0 }},
+{% endfor %}
+    blank()
+  ]
+)
+{% else %}
+# No playlists configured — streaming silence until a playlist is created
+autodj = blank()
+{% endif %}
+
+# Attach metadata callback
+autodj = on_metadata(on_track_change, autodj)
+
+# ---------------------------------------------------------------------------
+# Icecast outputs (one per active mount point)
+# ---------------------------------------------------------------------------
+{% for mount in mounts %}
+{% if mount.format == "mp3" %}
+%let enc_{{ loop.index0 }} = %mp3(bitrate={{ mount.bitrate }})
+{% elif mount.format == "ogg" %}
+%let enc_{{ loop.index0 }} = %vorbis
+{% elif mount.format == "aac" %}
+%let enc_{{ loop.index0 }} = %fdkaac(bitrate={{ mount.bitrate }})
+{% elif mount.format == "opus" %}
+%let enc_{{ loop.index0 }} = %opus(bitrate={{ mount.bitrate }})
+{% else %}
+%let enc_{{ loop.index0 }} = %mp3(bitrate={{ mount.bitrate }})
+{% endif %}
+
+output.icecast(
+  enc_{{ loop.index0 }},
+  host="{{ icecast_host }}",
+  port={{ icecast_port }},
+  password="{{ icecast_source_password }}",
+  mount="{{ mount.mount_path }}",
+  name="{{ station.name }}",
+  description="{{ station.description or '' }}",
+  fallible=false,
+  autodj
+)
+{% else %}
+# No mount points configured — nothing will be streamed
+{% endfor %}

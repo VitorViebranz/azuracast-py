@@ -1,0 +1,41 @@
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+class Settings(BaseSettings):
+    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
+
+    # App
+    APP_NAME: str = "AzuraCast-py"
+    APP_ENV: str = "development"
+    DEBUG: bool = True
+
+    # Database
+    DATABASE_URL: str = "postgresql+asyncpg://azuracast:azuracast@localhost:5432/azuracast"
+
+    # Redis
+    REDIS_URL: str = "redis://localhost:6379/0"
+
+    # JWT
+    SECRET_KEY: str = "change-me-in-production-use-random-256-bit-key"
+    ALGORITHM: str = "HS256"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+    REFRESH_TOKEN_EXPIRE_DAYS: int = 30
+
+    # CORS
+    CORS_ORIGINS: list[str] = ["http://localhost:5173", "http://localhost:3000"]
+
+    # Media storage
+    MEDIA_ROOT: str = "/var/azuracast/media"
+
+    # Icecast
+    ICECAST_HOST: str = "icecast"
+    ICECAST_PORT: int = 8000
+    ICECAST_SOURCE_PASSWORD: str = "hackme"
+    ICECAST_ADMIN_PASSWORD: str = "hackme"
+
+    # Liquidsoap
+    LIQUIDSOAP_TELNET_HOST: str = "liquidsoap"
+    LIQUIDSOAP_TELNET_PORT: int = 1234
+
+
+settings = Settings()

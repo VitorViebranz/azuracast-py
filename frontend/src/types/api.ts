@@ -22,6 +22,21 @@ export interface TokenResponse {
   token_type: string;
 }
 
+export interface MountPoint {
+  id: string;
+  station_id: string;
+  name: string;
+  display_name: string | null;
+  mount_path: string;
+  is_default: boolean;
+  is_public: boolean;
+  max_listeners: number;
+  bitrate: number;
+  format: string;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface Station {
   id: string;
   name: string;
@@ -33,6 +48,7 @@ export interface Station {
   max_mounts: number;
   created_at: string;
   updated_at: string;
+  mount_points: MountPoint[];
 }
 
 export interface LoginRequest {

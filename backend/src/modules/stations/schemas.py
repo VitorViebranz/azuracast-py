@@ -4,6 +4,18 @@ from datetime import datetime
 from pydantic import BaseModel
 
 
+class MountPointSummary(BaseModel):
+    id: uuid.UUID
+    name: str
+    mount_path: str
+    is_default: bool
+    is_public: bool
+    bitrate: int
+    format: str
+
+    model_config = {"from_attributes": True}
+
+
 class StationBase(BaseModel):
     name: str
     short_name: str
@@ -32,5 +44,6 @@ class StationResponse(StationBase):
     id: uuid.UUID
     created_at: datetime
     updated_at: datetime
+    mount_points: list[MountPointSummary] = []
 
     model_config = {"from_attributes": True}

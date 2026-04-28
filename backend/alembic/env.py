@@ -8,6 +8,7 @@ from src.core.config import settings
 from src.core.database import Base
 import src.modules.users.models  # noqa: F401
 import src.modules.stations.models  # noqa: F401
+import src.modules.mount_points.models  # noqa: F401
 
 config = context.config
 if config.config_file_name is not None:

@@ -24,5 +24,18 @@ class Settings(BaseSettings):
     # CORS
     CORS_ORIGINS: list[str] = ["http://localhost:5173", "http://localhost:3000"]
 
+    # Media storage
+    MEDIA_ROOT: str = "/var/azuracast/media"
+
+    # Icecast
+    ICECAST_HOST: str = "icecast"
+    ICECAST_PORT: int = 8000
+    ICECAST_SOURCE_PASSWORD: str = "hackme"
+    ICECAST_ADMIN_PASSWORD: str = "hackme"
+
+    # Liquidsoap
+    LIQUIDSOAP_TELNET_HOST: str = "liquidsoap"
+    LIQUIDSOAP_TELNET_PORT: int = 1234
+
 
 settings = Settings()

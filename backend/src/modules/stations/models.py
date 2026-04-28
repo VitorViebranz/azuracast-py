@@ -26,3 +26,9 @@ class Station(Base):
     mount_points: Mapped[list["MountPoint"]] = relationship(  # type: ignore[name-defined]
         "MountPoint", back_populates="station", cascade="all, delete-orphan", lazy="selectin"
     )
+    media_files: Mapped[list["MediaFile"]] = relationship(  # type: ignore[name-defined]
+        "MediaFile", back_populates="station", cascade="all, delete-orphan"
+    )
+    playlists: Mapped[list["Playlist"]] = relationship(  # type: ignore[name-defined]
+        "Playlist", back_populates="station", cascade="all, delete-orphan"
+    )
